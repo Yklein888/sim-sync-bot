@@ -1,0 +1,27 @@
+name: SIM Cards Auto Sync
+on:
+  schedule:
+    - cron: '0 * * * *' # ירוץ פעם בשעה
+  workflow_dispatch: # מאפשר לך להפעיל ידנית
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install Dependencies
+        run: |
+          npm init -y
+          npm install playwright @supabase/supabase-js
+          npx playwright install chromium
+      - name: Run Scraper
+        run: node sync.js
+        env:
+          SITE_USERNAME: ${{ secrets.SITE_USERNAME }}
+          SITE_PASSWORD: ${{ secrets.SITE_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
